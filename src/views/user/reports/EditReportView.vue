@@ -1,0 +1,1157 @@
+<template>
+  <div>
+    <div class="header-page w-100 p-5 text-center text-light">
+      <!-- text content wrapped for better control (still inside header-page) -->
+      <div class="text-content">
+        <h2>កែសម្រួលការរាយការណ៍របស់វត្ថុ</h2>
+        <p>កែសម្រួលទម្រង់ព័ត៌មាននៃការរាយការណ៍</p>
+      </div>
+
+      <!-- LEFT icon: bi-search (exact as inline given) -->
+      <div class="icon icon-left">
+        <i class="bi bi-search"></i>
+      </div>
+
+      <!-- RIGHT icon: bi-question-lg -->
+      <div class="icon icon-right">
+        <i class="bi bi-question-lg"></i>
+      </div>
+
+      <!-- icon at left:25% top:30% with bi-box-seam (original style: left:25%; top:30%) -->
+      <div class="icon" style="left: 25%; top: 30%">
+        <i class="bi bi-box-seam"></i>
+      </div>
+
+      <!-- icon at right:25% top:60% with bi-circle (original style: right:25%; top:60%) -->
+      <div class="icon" style="right: 25%; top: 60%">
+        <i class="bi bi-circle"></i>
+      </div>
+
+      <!-- OPTIONAL: additional micro detail – an extra faint icon? not needed but we can leave exactly as described.
+             the snippet had only four icons: two fixed left/right and two with percentage. 
+             Also includes the two extra inline style comments: 
+             <div class="icon" style="left: 25%; top: 30%"> <i class="bi bi-box-seam"></i> </div>
+             <div class="icon" style="right: 25%; top: 60%"> <i class="bi bi-circle"></i> </div>
+             so they are both present. Good.
+        -->
+
+      <!-- subtle extra glow (no extra icons) -->
+    </div>
+    <div class="container">
+      <div class="row justify-content-center align-items-center">
+        <div class="col-12 col-md-12 col-lg-11 col-xl-10 col-xxl-10">
+          <div class="my-4">
+            <BaseButton
+              variant="outline_primary"
+              @click="goBack"
+              icon="arrow-left"
+            >
+              ត្រឡប់ក្រោយ
+            </BaseButton>
+          </div>
+          <div class="card mb-5">
+            <div
+              class="card-header py-5 d-flex flex-column align-items-center"
+              style="
+                border-bottom: none;
+                background-color: #fff;
+                border-radius: 18px;
+              "
+            >
+              <span class="icons mb-3">
+                <i class="bi bi-box-seam"></i>
+              </span>
+              <h3>ប្រាប់ពួកយើងអំពីរបស់របររបស់អ្នក</h3>
+              <p>
+                តើអ្នកបានបាត់ឬរកឃើញអ្វី?
+                បំពេញទម្រង់ដើម្បីជួយពួកយើងកំណត់អត្តសញ្ញាណរបស់វា។
+              </p>
+            </div>
+            <div class="card-body">
+              <form @submit.prevent="handleSubmit" class="p-5">
+                <div class="row">
+                  <!-- ReportType & Status  -->
+                  <div class="col-12">
+                    <div class="row">
+                      <!-- Report reportTypeId  -->
+                      <div class="col-md-12 col-xxl-6">
+                        <div class="mb-4">
+                          <label class="form-label">
+                            ប្រភេទនៃការរបាយការណ៍
+                          </label>
+                          <div class="btn-group-report-type">
+                            <button
+                              type="button"
+                              @click="data.reportTypeId = '1'"
+                              :class="[
+                                'btn btn-report-type no-border-right-radius',
+                                data.reportTypeId === '1'
+                                  ? 'btn-danger'
+                                  : 'btn-no-border text-danger ',
+                              ]"
+                            >
+                              បាត់
+                            </button>
+
+                            <button
+                              type="button"
+                              @click="data.reportTypeId = '2'"
+                              :class="[
+                                'btn btn-report-type no-border-left-radius',
+                                data.reportTypeId === '2'
+                                  ? 'btn-success'
+                                  : 'btn-no-border text-success',
+                              ]"
+                            >
+                              រកឃើញ
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- Status  -->
+                      <div class="col-md-12 col-xxl-6">
+                        <div class="mb-4">
+                          <label class="form-label"> Status </label>
+                          <div class="btn-group-status ms-auto">
+                            <button
+                              type="button"
+                              @click="data.status = 'ACTIVE'"
+                              :class="[
+                                'btn btn-status no-border-right-radius',
+                                data.status === 'ACTIVE'
+                                  ? 'btn-primary'
+                                  : 'btn-no-border text-primary ',
+                              ]"
+                            >
+                              កំពុងដំណើរការ
+                            </button>
+
+                            <button
+                              type="button"
+                              @click="data.status = 'RESOLVED'"
+                              :class="[
+                                'btn btn-status no-border-left-radius',
+                                data.status === 'RESOLVED'
+                                  ? 'btn-secondary'
+                                  : 'btn-no-border text-secondary',
+                              ]"
+                            >
+                              បានដោះស្រាយ
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Title  -->
+                  <div class="col-12">
+                    <div class="mb-4">
+                      <label for="input-title" class="form-label">
+                        ចំណងជើង
+                        <span class="text-danger"> * </span>
+                      </label>
+                      <input
+                        v-model="data.title"
+                        type="text"
+                        id="input-title"
+                        :class="[
+                          'form-control form-control-custom',
+                          errorInput.title.error ? 'border-danger' : '',
+                        ]"
+                        placeholder="Enter Title"
+                      />
+                      <span
+                        v-if="errorInput.title.error"
+                        class="validation-msg text-danger"
+                      >
+                        {{ errorInput.title.msg }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Category  -->
+                  <div class="col-12 col-xl-6">
+                    <div class="mb-4">
+                      <label for="select-category" class="form-label">
+                        ប្រភេទ
+                        <span class="text-danger"> * </span>
+                      </label>
+                      <select
+                        v-model="data.category"
+                        class="form-select form-select-custom"
+                        id="select-category"
+                        :class="[
+                          'form-control form-control-custom',
+                          errorInput.category.error ? 'border-danger' : '',
+                        ]"
+                      >
+                        <option value="">ជ្រើសរើសប្រភេទ</option>
+                        <option
+                          v-for="category in categoryStore.categories"
+                          :key="category.id"
+                          :value="category.id"
+                        >
+                          {{ category.name }}
+                        </option>
+                      </select>
+                      <span
+                        v-if="errorInput.category.error"
+                        class="validation-msg text-danger"
+                      >
+                        {{ errorInput.category.msg }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Event Date  -->
+                  <div class="col-12 col-xl-6">
+                    <div class="mb-4">
+                      <label for="input-date" class="form-label">
+                        កាលបរិច្ឆេទនៃព្រឹត្តិការណ៍(ខែ/ថ្ងៃ/ឆ្នាំ)
+                        <span class="text-danger"> * </span>
+                      </label>
+                      <input
+                        v-model="data.eventDate"
+                        type="date"
+                        id="input-date"
+                        :class="[
+                          'form-control form-control-custom',
+                          errorInput.eventDate.error ? 'border-danger' : '',
+                        ]"
+                      />
+                      <span
+                        v-if="errorInput.eventDate.error"
+                        class="validation-msg text-danger"
+                      >
+                        {{ errorInput.eventDate.msg }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Description  -->
+                  <div class="col-12">
+                    <div class="mb-4">
+                      <label for="input-desc" class="form-label">
+                        ព័ត៌មានលម្អិត
+                        <span class="text-danger"> * </span>
+                      </label>
+                      <textarea
+                        v-model="data.description"
+                        id="input-desc"
+                        :class="[
+                          'form-control form-control-custom',
+                          errorInput.description.error ? 'border-danger' : '',
+                        ]"
+                        style="min-height: 150px"
+                        placeholder="សរសេរព័ត៌មានលម្អិត"
+                      ></textarea>
+                      <span
+                        v-if="errorInput.description.error"
+                        class="validation-msg text-danger"
+                      >
+                        {{ errorInput.description.msg }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Upload Image -->
+                  <div class="col-12">
+                    <div class="mb-4">
+                      <label for="input-images" class="form-label">
+                        បញ្ចូលរូបភាព
+                        <!-- <span class="text-danger"> * </span> -->
+                      </label>
+                      <input
+                        ref="fileInput"
+                        type="file"
+                        id="input-images"
+                        class="form-control form-control-custom d-none"
+                        multiple
+                        @change="handleFileUpload"
+                      />
+                      <div
+                        class="upload-img p-5 d-flex justify-content-center align-items-center mb-4"
+                      >
+                        <div class="box d-flex flex-column align-items-center">
+                          <i class="bi bi-upload" style="font-size: 50px"></i>
+                          <BaseButton
+                            variant="primary"
+                            @click="handleUploadImg"
+                          >
+                            Browse
+                          </BaseButton>
+                          <span class="fs-5 py-2"
+                            >ចុចប៊ូតុងដើម្បីបញ្ចូលរូបភាព</span
+                          >
+                        </div>
+                      </div>
+                      <!-- Preview Images -->
+                      <div class="preview-grid" v-if="previewUrls.length">
+                        <div
+                          v-for="(url, index) in previewUrls"
+                          :key="index"
+                          class="preview-wrapper"
+                        >
+                          <img :src="url" class="preview" />
+                          <span class="remove-btn" @click="removeImage(index)"
+                            >×</span
+                          >
+                        </div>
+                      </div>
+                      <span
+                        v-if="errorInput.images.error"
+                        class="validation-msg text-danger"
+                      >
+                        {{ errorInput.images.msg }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!--  Location Latitude & Longitude  -->
+                  <div class="col-12">
+                    <div class="row">
+                      <!-- Location  -->
+                      <div class="col-6">
+                        <div class="mb-4">
+                          <label for="input-location" class="form-label">
+                            ទីតាំង
+                            <span class="text-danger"> * </span>
+                          </label>
+                          <input
+                            v-model="data.location"
+                            type="text"
+                            id="input-location"
+                            :class="[
+                              'form-control form-control-custom',
+                              errorInput.location.error ? 'border-danger' : '',
+                            ]"
+                            placeholder="ទីតាំង​ព្រឹត្តិការណ៍"
+                          />
+                          <span
+                            v-if="errorInput.location.error"
+                            class="validation-msg text-danger"
+                          >
+                            {{ errorInput.location.msg }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Latitude  -->
+                      <div class="col-3">
+                        <div class="mb-4">
+                          <label for="input-latitude" class="form-label">
+                            រយៈទទឹង
+                          </label>
+                          <input
+                            v-model="data.latitude"
+                            type="text"
+                            id="input-latitude"
+                            :class="[
+                              'form-control form-control-custom',
+                              errorInput.latitude.error ? 'border-danger' : '',
+                            ]"
+                            placeholder="123"
+                          />
+                          <span
+                            v-if="errorInput.latitude.error"
+                            class="validation-msg text-danger"
+                          >
+                            {{ errorInput.latitude.msg }}
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Longitude  -->
+                      <div class="col-3">
+                        <div class="mb-4">
+                          <label for="input-longitude" class="form-label">
+                            រយៈបណ្ដោយ
+                          </label>
+                          <input
+                            v-model="data.longitude"
+                            type="text"
+                            id="input-longitude"
+                            :class="[
+                              'form-control form-control-custom',
+                              errorInput.longitude.error ? 'border-danger' : '',
+                            ]"
+                            placeholder="123"
+                          />
+                          <span
+                            v-if="errorInput.longitude.error"
+                            class="validation-msg text-danger"
+                          >
+                            {{ errorInput.longitude.msg }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Phone Number  -->
+                  <div class="col-12 col-xl-6">
+                    <div class="mb-4">
+                      <label for="input-phone" class="form-label">
+                        លេខទូរសព្ទ
+                        <span class="text-danger"> * </span>
+                      </label>
+                      <input
+                        v-model="data.phone"
+                        type="text"
+                        id="input-phone"
+                        :class="[
+                          'form-control form-control-custom',
+                          errorInput.phone.error ? 'border-danger' : '',
+                        ]"
+                        placeholder="0123456789"
+                      />
+                      <span
+                        v-if="errorInput.phone.error"
+                        class="validation-msg text-danger"
+                      >
+                        {{ errorInput.phone.msg }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Telegram Link  -->
+                  <div class="col-12 col-xl-6">
+                    <div class="mb-4">
+                      <label for="input-telegram" class="form-label">
+                        តំណភ្ជាប់ Telegram
+                        <span class="text-danger"> * </span>
+                      </label>
+                      <input
+                        v-model="data.telegramLink"
+                        type="text"
+                        id="input-telegram"
+                        :class="[
+                          'form-control form-control-custom',
+                          errorInput.telegramLink.error ? 'border-danger' : '',
+                        ]"
+                        placeholder="បញ្ចូលតំណភ្ជាប់Telegram"
+                      />
+                      <span
+                        v-if="errorInput.telegramLink.error"
+                        class="validation-msg text-danger"
+                      >
+                        {{ errorInput.telegramLink.msg }}
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Submit Button  -->
+                  <div class="col-12">
+                    <div class="my-4 text-center">
+                      <BaseButton
+                        variant="primary"
+                        type="submit"
+                        class="w-25"
+                        :isLoading="isLoading"
+                      >
+                        រក្សាទុកការកែប្រែ
+                      </BaseButton>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Message Model  -->
+      <BaseModal
+        :icon="msgIcon"
+        :theme="themeColor"
+        :isClose="showMessageModal"
+      >
+        <template #body>
+          <p class="fs-3">{{ message }}</p>
+        </template>
+
+        <!-- <template #btnActive>
+          <BaseButton
+            icon="box"
+            class="col-6"
+            :variant="themeColor"
+            @click="btnCloseMessage"
+          >
+            យល់ព្រម
+          </BaseButton>
+        </template> -->
+      </BaseModal>
+      <!-- Message Toast  -->
+      <BaseToast
+        v-model="showToast"
+        :message="message"
+        :theme="themeColor"
+        :icon="msgIcon"
+        :duration="3000"
+      />
+    </div>
+  </div>
+</template>
+<script setup>
+import { useCategoryStore } from "@/stores/categoryStore";
+import { useReportStore } from "@/stores/reportStore";
+import { onMounted, reactive, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import BaseToast from "@/components/base/BaseToast.vue";
+const showToast = ref(false);
+
+const data = reactive({
+  reportTypeId: "1",
+  title: "",
+  eventDate: "",
+  category: "",
+  description: "",
+  images: [],
+  location: "",
+  latitude: "",
+  longitude: "",
+  phone: "",
+  telegramLink: "",
+  status: "",
+});
+
+const errorInput = reactive({
+  title: { error: false, msg: "" },
+  category: { error: false, msg: "" },
+  eventDate: { error: false, msg: "" },
+  description: { error: false, msg: "" },
+  location: { error: false, msg: "" },
+  latitude: { error: false, msg: "" },
+  longitude: { error: false, msg: "" },
+  phone: { error: false, msg: "" },
+  telegramLink: { error: false, msg: "" },
+  images: { error: false, msg: "" },
+});
+
+const categoryStore = useCategoryStore();
+const reportStore = useReportStore();
+
+const router = useRouter();
+const route = useRoute();
+const reportId = ref(route.params.id);
+
+onMounted(async () => {
+  await Promise.all([
+    categoryStore.fetchCategories(),
+    reportStore.getReportById(reportId.value),
+  ]);
+  console.log(categoryStore.categories);
+  console.log(reportStore.report);
+  console.log(reportStore.report.reportType.id);
+
+  const report = reportStore.report;
+
+  data.title = report.title;
+  data.description = report.description;
+  data.category = report.category.id;
+  //   data.eventDate = report.eventDate;
+  data.eventDate = report.eventDate ? report.eventDate.split("T")[0] : "";
+  data.location = report.locationText;
+  data.latitude = report.latitude;
+  data.longitude = report.longitude;
+  data.reportTypeId = String(reportStore.report.reportType.id);
+  data.phone = report.contactInformation.phoneNumber;
+  data.telegramLink = report.contactInformation.telegramLink;
+  data.status = report.status;
+  previewUrls.value = report.reportImages.map((img) => img.name);
+  data.images = [];
+});
+
+const clearData = () => {
+  data.reportTypeId = "";
+  data.title = "";
+  data.eventDate = "";
+  data.category = "";
+  data.description = "";
+  data.images = [];
+  data.location = "";
+  data.latitude = "";
+  data.longitude = "";
+  data.phone = "";
+  data.telegramLink = "";
+  data.status = "";
+};
+
+// Regex patterns
+const regex = {
+  number: /^-?\d+(\.\d+)?$/,
+
+  url: /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}([\/\w .-]*)*\/?$/,
+};
+
+// Validation function
+function validateForm() {
+  let isValid = true;
+
+  // Reset all errors
+  Object.keys(errorInput).forEach((key) => {
+    errorInput[key].error = false;
+    errorInput[key].msg = "";
+  });
+
+  // Title: required, length > 5
+  if (!data.title || data.title.length < 6) {
+    errorInput.title.error = true;
+    errorInput.title.msg = "ចំណងជើងត្រូវបានទាមទារ និងត្រូវមានតួអក្សរច្រើនជាង 5";
+    isValid = false;
+  }
+
+  // Event Date: required
+  if (!data.eventDate) {
+    errorInput.eventDate.error = true;
+    errorInput.eventDate.msg = "កាលបរិច្ឆេទនៃព្រឹត្តិការណ៍ត្រូវបានទាមទារ";
+    isValid = false;
+  }
+
+  // Category: required
+  if (!data.category) {
+    errorInput.category.error = true;
+    errorInput.category.msg = "ប្រភេទត្រូវបានទាមទារ";
+    isValid = false;
+  }
+
+  // Description: required, length > 10
+  if (!data.description || data.description.length < 11) {
+    errorInput.description.error = true;
+    errorInput.description.msg =
+      "ព័ត៌មានលម្អិតត្រូវបានទាមទារ និងត្រូវមានអក្សរច្រើនជាង10";
+    isValid = false;
+  }
+
+  // Location: required
+  if (!data.location) {
+    errorInput.location.error = true;
+    errorInput.location.msg = "ទីតាំងត្រូវបានទាមទារ";
+    isValid = false;
+  }
+
+  // Latitude: number
+  if (!regex.number.test(data.latitude)) {
+    errorInput.latitude.error = true;
+    errorInput.latitude.msg = "រយៈទទឹង ត្រូវតែជលេខ";
+    isValid = false;
+  }
+
+  // Longitude: number
+  if (!regex.number.test(data.longitude)) {
+    errorInput.longitude.error = true;
+    errorInput.longitude.msg = "រយៈបណ្ដោយ ត្រូវតែជលេខ";
+    isValid = false;
+  }
+
+  // Phone: required, number, 8-15 digits
+  if (!data.phone || !/^[0-9]{8,15}$/.test(data.phone)) {
+    errorInput.phone.error = true;
+    errorInput.phone.msg =
+      "លេខទូរសព្ទត្រូវបានទាមទារ និងមានចំនួនចាប់ពី8-15សខ្ទង់";
+    isValid = false;
+  }
+
+  // Telegram Link: required, valid link
+  if (!data.telegramLink || !regex.url.test(data.telegramLink)) {
+    errorInput.telegramLink.error = true;
+    errorInput.telegramLink.msg =
+      "តំណភ្ជាប់ Telegram ត្រូវបានទាមទារ និងត្រូវតែជា URL ត្រឹមត្រូវ";
+    isValid = false;
+  }
+
+  // Upload Images: Max=3
+  if (data.images.length > 3) {
+    errorInput.images.error = true;
+    errorInput.images.msg = "រូបភាពច្រើនជាង3";
+    isValid = false;
+  }
+
+  return isValid;
+}
+const previewUrls = ref([]);
+// function handleFileUpload(event) {
+//   const files = Array.from(event.target.files); // convert FileList to array
+//   // Add new files to existing images
+//   data.images.push(...files);
+//   console.log(data.images);
+
+//   // Generate preview URLs
+//   previewUrls.value.push(...files.map((file) => URL.createObjectURL(file)));
+// }
+function handleFileUpload(event) {
+  const files = Array.from(event.target.files);
+
+  const total = data.images.length + files.length;
+
+  // block if over 3
+  if (total > 3) {
+    errorInput.images.error = true;
+    errorInput.images.msg = "អាចបញ្ចូលរូបភាពបានតែ 3 ប៉ុណ្ណោះ";
+
+    // reset input so user can reselect
+    event.target.value = "";
+    return;
+  }
+
+  // clear error
+  errorInput.images.error = false;
+  errorInput.images.msg = "";
+
+  data.images.push(...files);
+  previewUrls.value.push(...files.map((f) => URL.createObjectURL(f)));
+}
+
+function removeImage(index) {
+  // Remove the image and URL at the index
+  data.images.splice(index, 1);
+  previewUrls.value.splice(index, 1);
+}
+
+const fnHandleEditReport = async (formData) => {
+  await reportStore.editOwnReport(reportId.value, formData);
+};
+
+const modalTimer = ref(null);
+const showMessageModal = ref(false);
+const msgIcon = ref("");
+const isLoading = ref(false);
+const message = ref("");
+const themeColor = ref("danger");
+const handleSubmit = async () => {
+  if (validateForm()) {
+    console.log("Form is valid. Submit data:", data);
+    //Create formData
+    const formData = new FormData();
+
+    // Append normal fields as strings
+    formData.append("title", String(data.title));
+    formData.append("description", String(data.description));
+    formData.append("eventDate", String(data.eventDate));
+    // const timestamp = new Date(data.eventDate).getTime(); // number
+    // formData.append("eventDate", String(timestamp)); // numeric string
+
+    formData.append("locationText", String(data.location));
+    formData.append("latitude", String(data.latitude)); // <-- use String
+    formData.append("longitude", String(data.longitude)); // <-- use String
+    formData.append("categoryId", String(data.category)); // <-- use String
+    formData.append("reportTypeId", String(data.reportTypeId)); // <-- use String
+    formData.append("phoneNumber", String(data.phone));
+    formData.append("telegramLink", String(data.telegramLink));
+    formData.append("status", String(data.status));
+
+    // Append images
+    if (data.images && data.images.length > 0) {
+      data.images.forEach((file) => {
+        formData.append("reportImages", file); // remove []
+      });
+    }
+
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1]);
+    }
+
+    isLoading.value = true;
+    // Call API or do next action
+    try {
+      await fnHandleEditReport(formData);
+      console.log(reportStore.msgEditOwnReport);
+      console.log(reportStore.msgEditOwnReport.message);
+      if (reportStore.msgEditOwnReport?.result) {
+        msgIcon.value = "check-circle";
+        themeColor.value = "success";
+        // message.value = reportStore.msgEditOwnReport.message;
+        message.value = "កែសម្រួលដោយជោគជ័យ";
+      }
+    } catch (error) {
+      // Handle API/network errors
+      console.error(error);
+      msgIcon.value = "x-lg";
+      themeColor.value = "danger";
+
+      // If your API sends response in error.response.data, you can do:
+      if (error?.response?.data?.message) {
+        message.value = error.response.data.message;
+      } else {
+        message.value = "មិនអាចកែសម្រួលបានទេ។ សូមព្យាយាមម្ដងទៀត";
+      }
+    } finally {
+      isLoading.value = false;
+      // showMessageModal.value = true;
+      showToast.value = true;
+      modalTimer.value = setTimeout(() => {
+        // showMessageModal.value = false;
+        clearData();
+        router.push({ name: "own-reports" });
+      }, 3000);
+    }
+  } else {
+    console.log("Validation errors:", errorInput);
+    return;
+  }
+};
+const btnCloseMessage = () => {
+  showMessageModal.value = false;
+  clearData();
+  router.push({ name: "own-reports" });
+};
+const goBack = () => {
+  router.back();
+};
+const fileInput = ref(null);
+
+const handleUploadImg = () => {
+  fileInput.value.click();
+};
+</script>
+<style scoped>
+.header-page {
+  background-color: var(--primary-color);
+  position: relative;
+  border-bottom-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+}
+.header-page .icon {
+  position: absolute;
+  color: rgba(214, 214, 214, 0.588) !important;
+  top: 50%;
+  font-size: 30px;
+
+  transform: translateY(-50%) scale(1);
+}
+.icon-left {
+  animation: pulse 6s infinite;
+  left: 20%;
+}
+.icon-right {
+  animation: pulse 5s infinite;
+  right: 20%;
+}
+.icons {
+  font-size: 40px;
+  width: 100px;
+  height: 100px;
+  background-color: var(--primary-color);
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn-group-report-type,
+.btn-group-status {
+  width: 100%;
+  background-color: #eee;
+  border-radius: 22px;
+  padding: 5px;
+}
+.btn-report-type,
+.btn-status {
+  font-weight: bold;
+  width: 50%;
+  font-size: 18px;
+  border-radius: 15px;
+}
+.btn-report-type:hover,
+.btn-status:hover {
+  outline: 1px solid black;
+}
+.btn-no-border {
+  border: none;
+  background-color: #fff;
+}
+.form-control-custom,
+.form-select-custom {
+  font-size: 16px;
+  padding: 10px;
+  /* background-color: #eee; */
+}
+.form-control-custom:focus,
+.form-select-custom:focus {
+  box-shadow: none;
+  border-color: var(--primary-color);
+}
+.no-border-left-radius {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+.no-border-right-radius {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+}
+.validation-msg {
+  display: inline-block;
+  font-size: 14px;
+  margin-top: 6px;
+  padding-left: 3px;
+}
+/* --------------- */
+.preview-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.preview-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #a7a5a5;
+  color: white;
+  width: 20px;
+  height: 20px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+/* ------------------- */
+.upload-img {
+  border: 2px dashed black;
+  border-radius: 10px;
+  height: 250px;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-20%) scale(1.05);
+  }
+}
+
+.header-page {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, #f8f2ff 0%, #f0e8ff 50%, #e8deff 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 0rem 0rem 3.5rem 3.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: hidden; /* keeps icons inside rounded corners */
+  transition: all 0.2s ease;
+}
+
+/* text block with breathing space */
+.header-page .text-content {
+  position: relative;
+  z-index: 10;
+  padding: 4rem 3rem 5rem 3rem;
+  text-align: center;
+}
+
+.header-page h2 {
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  color: var(--secondary-color);
+}
+
+.header-page p {
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  font-weight: 400;
+  max-width: 650px;
+  margin: 0 auto;
+  opacity: 0.9;
+  color: black;
+  backdrop-filter: blur(4px);
+  padding: 0.8rem 2rem;
+  border-radius: 80px;
+  display: inline-block;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  line-height: 1.5;
+}
+
+/* ----- icon base (absolute) ----- */
+.icon {
+  position: absolute;
+  font-size: 2.3rem;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow:
+    0 15px 25px -8px rgba(150, 150, 150, 0.5),
+    0 0 0 1px rgba(255, 255, 240, 0.1) inset;
+  transition:
+    transform 0.2s ease,
+    background 0.2s,
+    color 0.2s;
+  z-index: 20;
+  pointer-events: none; /* so they don't block text selection */
+}
+
+/* subtle hover lift on icons (just for delight, no click) */
+.header-page:hover .icon {
+  transform: scale(1.02);
+}
+
+/* left & right large icons */
+.icon-left {
+  left: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  width: 5.5rem;
+  height: 5.5rem;
+  background: rgba(200, 230, 255, 0.12);
+  color: rgba(230, 245, 255, 0.9);
+  box-shadow: 0 25px 30px -10px rgb(199, 199, 199);
+}
+
+.icon-right {
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3.2rem;
+  width: 5.5rem;
+  height: 5.5rem;
+  background: rgba(230, 240, 255, 0.1);
+  color: rgba(255, 255, 210, 0.9);
+}
+
+/* two specific icons with custom positions (preserving inline styles) */
+.icon-quarter-left {
+  left: 25% !important; /* match inline style: left:25%; top:30% */
+  top: 30% !important;
+  transform: translate(-50%, -50%);
+  background: rgba(170, 220, 255, 0.18);
+  color: #b3e0ff;
+  font-size: 2.7rem;
+  width: 5rem;
+  height: 5rem;
+}
+
+.icon-quarter-right {
+  right: 25% !important; /* right:25%; top:60% */
+  top: 60% !important;
+  transform: translate(50%, -50%);
+  background: rgba(255, 230, 170, 0.15);
+  color: #ffe2a3;
+  font-size: 2.9rem;
+  width: 5rem;
+  height: 5rem;
+}
+
+/* make sure icons are above background but not interfering with text */
+.bi {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* additional floating particles (optional micro-interaction) */
+.icon i {
+  transition: all 0.2s;
+}
+
+/* responsive adjustments: reduce icon sizes & spacing */
+@media (max-width: 700px) {
+  .header-page .text-content {
+    padding: 3rem 1.5rem 4rem 1.5rem;
+  }
+  .icon-left,
+  .icon-right {
+    width: 4rem;
+    height: 4rem;
+    font-size: 2.2rem;
+  }
+  .icon-quarter-left,
+  .icon-quarter-right {
+    width: 4rem;
+    height: 4rem;
+    font-size: 2rem;
+  }
+  .icon-left {
+    left: 0.8rem;
+  }
+  .icon-right {
+    right: 0.8rem;
+  }
+}
+
+/* for very small screens, maybe hide two icons? but we keep them */
+@media (max-width: 480px) {
+  .icon-quarter-left,
+  .icon-quarter-right {
+    opacity: 0.5; /* subtle but still visible */
+  }
+  .header-page p {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+}
+
+/* additional touches: a soft gradient overlay inside */
+.header-page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 20% 40%,
+    rgba(255, 255, 255, 0.03) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* make icons slightly more colorful on hover for text */
+.header-page:hover .bi-search {
+  color: #aad0ff;
+}
+.header-page:hover .bi-question-lg {
+  color: #ffde9e;
+}
+.header-page:hover .bi-box-seam {
+  color: #9ecbff;
+}
+.header-page:hover .bi-circle {
+  color: #fde3a5;
+}
+
+/* force exact positions from inline style (preserve exact % ) */
+/* since inline style used left:25%; top:30% etc, we reuse classes */
+.icon[style*="left: 25%"] {
+  left: 25% !important;
+  top: 30% !important;
+  transform: translate(-50%, -50%);
+}
+.icon[style*="right: 25%"] {
+  right: 25% !important;
+  top: 60% !important;
+  transform: translate(50%, -50%);
+}
+
+/* but ensure they also have the icon styling */
+.icon.bi-box-seam,
+.icon.bi-circle {
+  /* inherits all from .icon, fine */
+}
+</style>
